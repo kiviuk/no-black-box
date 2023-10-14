@@ -1,10 +1,10 @@
 const constants = require('../common/constants.js');
 const featureFunctions = require('../common/featureFunctions.js');
+const utils = require('../common/utils');
 
 const fs = require('fs');
 
 console.log("EXTRACTING FEATURES!")
-
 
 // ingest samples.json
 // Array of {"id":1,"label":"car","student_name":"Radu","student_id":1663053145814}
@@ -22,7 +22,11 @@ for (const sample of samples) {
     sample.point = functions.map(f => f(paths));
 }
 
-const featureNames = featureFunctions.inUse.map(f=>f.name);
+const minMax = utils.normalizePoints(
+    samples.map(s => s.point)
+);
+
+const featureNames = featureFunctions.inUse.map(f => f.name);
 
 fs.writeFileSync(constants.FEATURES,
     JSON.stringify({
@@ -43,6 +47,10 @@ fs.writeFileSync(constants.FEATURES_JS,
             samples
         }
     )}`
+);
+
+fs.writeFileSync(constants.MIN_MAX_JS,
+    `${JSON.stringify(minMax)}`
 );
 
 console.log("DONE!")
