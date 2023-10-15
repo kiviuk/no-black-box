@@ -16,6 +16,7 @@
         <button onclick="toggleInput()">
             Toggle input
         </button>
+        <div id="statistics"></div>
     </div>
     <div id="container"></div>
 
@@ -60,10 +61,28 @@
                     const trainingSamples = training.samples;
                     const testingSamples = testing.samples;
 
+                    let correctCount=0;
+                    let totalCount=0;
+                    let k = 50;
+
                     for (const testSample of testingSamples) {
                         testSample.truth = testSample.label;
                         testSample.label = "testing";
+                        const {label} = classify(testSample.point);
+                        testSample.label = label;
+                        testSample.correct = testSample.label === testSample.truth;
+                        totalCount++;
+                        correctCount += testSample.correct ? 0 : 1;
+
                     }
+                    statistics.innerHTML = "<b>ACCURACY</b><br>" +
+                        correctCount + "/" + totalCount + " (" +
+                        utils.formatPercent(correctCount / totalCount) +
+                        ")";
+
+                    const subtitle1 = document.createElement("h2");
+                    subtitle1.innerHTML = "TRAINING";
+                    container.append(subtitle1);
 
                     const trainingGroups = utils.groupBy(trainingSamples, "student_id");
                     for (let student_id in trainingGroups) {
@@ -71,6 +90,10 @@
                         const studentName = samples[0].student_name;
                         createRow(container, studentName, student_id, samples);
                     }
+
+                    const subtitle2 = document.createElement("h2");
+                    subtitle2.innerHTML = "TESTING";
+                    container.append(subtitle2);
 
                     const testingGroups = utils.groupBy(testingSamples, "student_id");
                     for (let student_id in testingGroups) {
@@ -99,6 +122,7 @@
                     sketchPad = new SketchPad(inputContainer, onDrawingUpdate);
 
                     sketchPad.canvas.style.cssText += "outline:100000px solid rgba(0,0,0,0.7);";
+                    toggleInput()
 
                     function onDrawingUpdate(paths) {
                         const functions = featureFunctions.inUse.map(f => f.function);
@@ -111,10 +135,10 @@
 
                     function classify(point) {
                         const samplePoints = trainingSamples.map(s => s.point);
-                        const indices = utils.getNearest(point, samplePoints, 10);
+                        const indices = utils.getNearest(point, samplePoints, k);
 
                         const nearestSamples = indices.map(i => trainingSamples[i]);
-                        console.log(nearestSamples)
+                        // console.log(nearestSamples)
                         const labels = nearestSamples.map(s => s.label);
                         const counts = {};
                         for (const label of labels) {
