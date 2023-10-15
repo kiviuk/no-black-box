@@ -16,6 +16,9 @@
         <button onclick="toggleInput()">
             Toggle input
         </button>
+        <button onclick="toggleSamples()">
+            Toggle data
+        </button>
         <div id="statistics"></div>
     </div>
     <div id="container"></div>
@@ -24,6 +27,7 @@
     <script src="../common/utils.js"></script>
     <script src="../common/draw.js"></script>
     <script src="../common/featureFunctions.js"></script>
+    <script src="../common/classifiers/knn.js"></script>
 
     <script src="js/display.js"></script>
     <script src="js/sketchPad.js"></script>
@@ -64,17 +68,18 @@
                     let correctCount=0;
                     let totalCount=0;
                     let k = 50;
+                    const kNN = new KNN(trainingSamples, k);
 
                     for (const testSample of testingSamples) {
                         testSample.truth = testSample.label;
                         testSample.label = "testing";
-                        const {label} = classify(testSample.point);
+                        const {label} = kNN.predict(testSample.point);
                         testSample.label = label;
                         testSample.correct = testSample.label === testSample.truth;
                         totalCount++;
-                        correctCount += testSample.correct ? 0 : 1;
-
+                        correctCount += testSample.correct ? 1 : 0;
                     }
+
                     statistics.innerHTML = "<b>ACCURACY</b><br>" +
                         correctCount + "/" + totalCount + " (" +
                         utils.formatPercent(correctCount / totalCount) +
@@ -107,8 +112,11 @@
                         axesLabels: featureNames,
                         styles: utils.styles,
                         transparency: 0.7,
-                        icon: "image"
+                        icon: "image",
+                        bg:new Image()
                     };
+
+                    options.bg.src = constants.DECISION_BOUNDARY;
 
                     graphics.generateImages(utils.styles);
 
@@ -128,26 +136,9 @@
                         const functions = featureFunctions.inUse.map(f => f.function);
                         point = functions.map(f => f(paths));
                         utils.normalizePoints([point], minMaxScale);
-                        const {label, nearestSamples} = classify(point);
+                        const {label, nearestSamples} = kNN.predict(point);
                         predictedLabelContainer.innerHTML = "Is it a " + label + " ?";
                         chart.showDynamicPoint(point, label, nearestSamples);
-                    }
-
-                    function classify(point) {
-                        const samplePoints = trainingSamples.map(s => s.point);
-                        const indices = utils.getNearest(point, samplePoints, k);
-
-                        const nearestSamples = indices.map(i => trainingSamples[i]);
-                        // console.log(nearestSamples)
-                        const labels = nearestSamples.map(s => s.label);
-                        const counts = {};
-                        for (const label of labels) {
-                            counts[label] = counts[label] ? counts[label] + 1 : 1;
-                        }
-                        console.log(counts);
-                        const max = Math.max(...Object.values(counts));
-                        const label = labels.find(l => counts[l] === max);
-                        return {label, nearestSamples};
                     }
                 }
             );

@@ -73,3 +73,7 @@ function toggleInput() {
         chart.hideDynamicPoint();
     }
 }
+
+function toggleSamples() {
+    chart.toggleSamples();
+}

@@ -5,7 +5,10 @@ class Chart {
         this.axesLabels = options.axesLabels;
         this.styles = options.styles;
         this.icon = options.icon;
+        this.bg = options.bg;
         this.onClick = onClick;
+
+        this.enabled = true;
 
         this.canvas = document.createElement("canvas");
         this.canvas.width = options.size;
@@ -14,6 +17,7 @@ class Chart {
         container.appendChild(this.canvas);
 
         this.ctx = this.canvas.getContext("2d");
+        this.ctx.imageSmoothingEnabled = false;
 
         this.margin = options.size * 0.11;
         this.transparency = options.transparency || 1;
@@ -53,6 +57,11 @@ class Chart {
     hideDynamicPoint() {
         this.dynamicPoint = null;
         this.#draw();
+    }
+
+    toggleSamples() {
+        this.enabled = !this.enabled;
+        this.#draw()
     }
 
     #addEventListeners() {
@@ -233,8 +242,18 @@ class Chart {
         const {ctx, canvas} = this;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        ctx.globalAlpha = this.transparency;
-        this.#drawSamples(this.samples);
+        const topLeft = math.remapPoint(
+            this.dataBounds,
+            this.pixelBounds,
+            [0, 1]
+        );
+        const sz = (canvas.width - this.margin * 2) / this.dataTrans.scale ** 2;
+        ctx.drawImage(this.bg, ...topLeft, sz, sz);
+        this.transparency = this.enabled ? 0.7 : 0;
+        console.log(this.enabled, this.transparency)
+        if (this.enabled) {
+            this.#drawSamples(this.samples);
+        }
         ctx.globalAlpha = 1;
 
         if (this.hoveredSample) {

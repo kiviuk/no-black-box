@@ -1,4 +1,4 @@
-const utils = {};
+let utils = {};
 
 utils.flaggedUser = [1663882102141, 1663900040545, 1664485938220];
 
