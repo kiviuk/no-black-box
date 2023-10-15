@@ -45,68 +45,88 @@
         let chart;
         let sketchPad;
 
-        fetch("../common/js_objects/features.js")
-            .then(response => response.json())
-            .then(features => {
-                const {samples, featureNames} = features;
-                //console.log(features);
-                const groups = utils.groupBy(samples, "student_id");
-                for (let student_id in groups) {
-                    const samples = groups[student_id];
-                    const studentName = samples[0].student_name;
-                    createRow(container, studentName, student_id, samples);
-                }
+        Promise.all(
+            [
+                fetch("../common/js_objects/features.js")
+                    .then(response => response.json()),
+                fetch("../common/js_objects/training.js")
+                    .then(response => response.json()),
+                fetch("../common/js_objects/testing.js")
+                    .then(response => response.json()),
+            ])
+            .then(
+                ([all, training, testing]) => {
+                    const featureNames = all.featureNames;
+                    const trainingSamples = training.samples;
+                    const testingSamples = testing.samples;
 
-                const options = {
-                    size: 500,
-                    axesLabels: featureNames,
-                    styles: utils.styles,
-                    transparency: 0.7,
-                    icon: "image"
-                };
-
-                graphics.generateImages(utils.styles);
-
-                chart = new Chart(
-                    chartContainer,
-                    samples,
-                    options,
-                    handleClick
-                );
-
-                sketchPad = new SketchPad(inputContainer, onDrawingUpdate);
-
-                sketchPad.canvas.style.cssText += "outline:100000px solid rgba(0,0,0,0.7);";
-
-                function onDrawingUpdate(paths) {
-                    const functions = featureFunctions.inUse.map(f => f.function);
-                    point = functions.map(f => f(paths));
-                    utils.normalizePoints([point], minMaxScale);
-                    const {label, nearestSamples} = classify(point);
-                    // console.log(label);
-                    predictedLabelContainer.innerHTML = "Is it a " + label + " ?";
-                    chart.showDynamicPoint(point, label, nearestSamples);
-                }
-
-                function classify(point) {
-                    const samplePoints = samples.map(s => s.point);
-                    const indices = utils.getNearest(point, samplePoints, 10);
-
-                    // console.log(indices)
-
-                    const nearestSamples = indices.map(i => samples[i]);
-                    console.log(nearestSamples)
-                    const labels = nearestSamples.map(s => s.label);
-                    const counts = {};
-                    for (const label of labels) {
-                        counts[label] = counts[label] ? counts[label] + 1 : 1;
+                    for (const testSample of testingSamples) {
+                        testSample.truth = testSample.label;
+                        testSample.label = "testing";
                     }
-                    console.log(counts);
-                    const max = Math.max(...Object.values(counts));
-                    const label = labels.find(l => counts[l] === max);
-                    return {label, nearestSamples};
+
+                    const trainingGroups = utils.groupBy(trainingSamples, "student_id");
+                    for (let student_id in trainingGroups) {
+                        const samples = trainingGroups[student_id];
+                        const studentName = samples[0].student_name;
+                        createRow(container, studentName, student_id, samples);
+                    }
+
+                    const testingGroups = utils.groupBy(testingSamples, "student_id");
+                    for (let student_id in testingGroups) {
+                        const samples = testingGroups[student_id];
+                        const studentName = samples[0].student_name;
+                        createRow(container, studentName, student_id, samples);
+                    }
+
+                    const options = {
+                        size: 500,
+                        axesLabels: featureNames,
+                        styles: utils.styles,
+                        transparency: 0.7,
+                        icon: "image"
+                    };
+
+                    graphics.generateImages(utils.styles);
+
+                    chart = new Chart(
+                        chartContainer,
+                        trainingSamples,
+                        options,
+                        handleClick
+                    );
+
+                    sketchPad = new SketchPad(inputContainer, onDrawingUpdate);
+
+                    sketchPad.canvas.style.cssText += "outline:100000px solid rgba(0,0,0,0.7);";
+
+                    function onDrawingUpdate(paths) {
+                        const functions = featureFunctions.inUse.map(f => f.function);
+                        point = functions.map(f => f(paths));
+                        utils.normalizePoints([point], minMaxScale);
+                        const {label, nearestSamples} = classify(point);
+                        predictedLabelContainer.innerHTML = "Is it a " + label + " ?";
+                        chart.showDynamicPoint(point, label, nearestSamples);
+                    }
+
+                    function classify(point) {
+                        const samplePoints = trainingSamples.map(s => s.point);
+                        const indices = utils.getNearest(point, samplePoints, 10);
+
+                        const nearestSamples = indices.map(i => trainingSamples[i]);
+                        console.log(nearestSamples)
+                        const labels = nearestSamples.map(s => s.label);
+                        const counts = {};
+                        for (const label of labels) {
+                            counts[label] = counts[label] ? counts[label] + 1 : 1;
+                        }
+                        console.log(counts);
+                        const max = Math.max(...Object.values(counts));
+                        const label = labels.find(l => counts[l] === max);
+                        return {label, nearestSamples};
+                    }
                 }
-            })
+            );
 
     </script>
 </div>
