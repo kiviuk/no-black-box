@@ -4,7 +4,7 @@ function createRow(container, studentName, student_id, samples) {
     container.appendChild(row);
 
     const rowLabel = document.createElement("div");
-    rowLabel.innerHTML = studentName + "_" + student_id;
+    rowLabel.innerHTML = studentName; // + "_" + student_id;
     rowLabel.classList.add("rowLabel");
     row.appendChild(rowLabel);
 
@@ -71,6 +71,14 @@ function toggleInput() {
     } else {
         inputContainer.style.display = 'none';
         chart.hideDynamicPoint();
+    }
+}
+
+function toggleOutput() {
+    if (confusionContainer.style.display === 'none') {
+        confusionContainer.style.display = 'block';
+    } else {
+        confusionContainer.style.display = 'none';
     }
 }
 

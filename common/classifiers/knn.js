@@ -20,7 +20,7 @@ class KNN {
         for (const label of labels) {
             counts[label] = counts[label] ? counts[label] + 1 : 1;
         }
-        // console.log(counts);
+        console.log(counts);
         const max = Math.max(...Object.values(counts));
         const label = labels.find(l => counts[l] === max);
         return {label, nearestSamples};

@@ -3,3 +3,4 @@ node/node_modules
 node/package.json
 node/package-lock.json
 data/dataset/img/
+**.DS_Store

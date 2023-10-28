@@ -250,7 +250,7 @@ class Chart {
         const sz = (canvas.width - this.margin * 2) / this.dataTrans.scale ** 2;
         ctx.drawImage(this.bg, ...topLeft, sz, sz);
         this.transparency = this.enabled ? 0.7 : 0;
-        console.log(this.enabled, this.transparency)
+        //console.log(this.enabled, this.transparency)
         if (this.enabled) {
             this.#drawSamples(this.samples);
         }

@@ -2,6 +2,8 @@ let utils = {};
 
 utils.flaggedUser = [1663882102141, 1663900040545, 1664485938220];
 
+utils.classes = ["car", "fish", "house", "tree", "bicycle", "guitar", "pencil", "clock"];
+
 utils.styles = {
     car: {color: 'gray', text: '🚗'},
     fish: {color: 'red', text: '🐠'},
