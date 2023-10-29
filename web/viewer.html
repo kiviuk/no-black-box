@@ -30,6 +30,7 @@
 
     <script src="../common/constants.js"></script>
     <script src="../common/utils.js"></script>
+    <script src="../common/geometry.js"></script>
     <script src="../common/draw.js"></script>
     <script src="../common/featureFunctions.js"></script>
     <script src="../common/classifiers/knn.js"></script>
@@ -120,7 +121,8 @@
                         styles: utils.styles,
                         transparency: 0.7,
                         icon: "image",
-                        bg:new Image()
+                        bg:new Image(),
+                        hideSamples: true
                     };
 
                     options.bg.src = constants.DECISION_BOUNDARY;
