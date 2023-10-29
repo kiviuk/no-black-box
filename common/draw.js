@@ -1,18 +1,17 @@
 const draw = {};
 
-draw.path = (ctx, path, color = "black") => {
+draw.path = (ctx, path, color = "black", width = 3) => {
     ctx.strokeStyle = color;
-    ctx.lineWidth = 3;
+    ctx.lineWidth = width;
     ctx.beginPath();
     ctx.moveTo(...path[0]);
     for (let i = 1; i < path.length; i++) {
         ctx.lineTo(...path[i]);
     }
     ctx.lineCap = "round";
-    ctx.lineJoin = "round"
+    ctx.lineJoin = "round";
     ctx.stroke();
-
-}
+};
 
 // to draw multiple paths
 draw.paths=(ctx, paths, color="black")=>{
