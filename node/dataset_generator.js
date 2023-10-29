@@ -1,6 +1,7 @@
 const draw = require('../common/draw');
 const constants = require('../common/constants');
 const utils = require('../common/utils');
+const geometry = require("../common/geometry.js");
 
 const {createCanvas} = require('canvas');
 const canvas = createCanvas(400, 400);
@@ -30,10 +31,9 @@ fileNames.forEach(fn => {
             JSON.stringify(paths)
         );
 
-        // generateImageFile(
-        //     constants.IMG_DIR + "/" + id + ".png",
-        //     paths
-        // );
+        generateImageFile(
+            constants.IMG_DIR + "/" + id + ".png", paths
+        );
 
         utils.printProgress(id, fileNames.length * 8)
         id++;
@@ -53,6 +53,14 @@ fs.writeFileSync(
 function generateImageFile(outFile, paths) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     draw.paths(ctx, paths);
+
+    const {vertices, hull} = geometry.minimumBoundingBox({
+        points: paths.flat()
+    });
+
+    draw.path(ctx, [...vertices, vertices[0]], "red");
+    draw.path(ctx, [...hull, hull[0]], "blue");
+
     const buffer = canvas.toBuffer("image/png");
     fs.writeFileSync(outFile, buffer);
 }

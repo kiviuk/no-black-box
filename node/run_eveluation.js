@@ -42,6 +42,7 @@ for (let x = 0; x < canvas.width; x++) {
             x / canvas.width,
             1 - y / canvas.height
         ];
+        point.push(0.2);
         const {label} = kNN.predict(point);
         ctx.fillStyle = utils.styles[label].color;
         ctx.fillRect(x, y, 1, 1);
