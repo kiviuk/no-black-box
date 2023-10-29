@@ -19,6 +19,9 @@ featureFunctions.getPointCount = (paths) => {
 
 featureFunctions.getWidth = (paths) => {
     const points = paths.flat();
+    if (points.length == 0) {
+        return 0;
+    }
     const x = points.map(p => p[0]);
     const min = Math.min(...x);
     const max = Math.max(...x);
@@ -27,6 +30,9 @@ featureFunctions.getWidth = (paths) => {
 
 featureFunctions.getHeight = (paths) => {
     const points = paths.flat();
+    if (points.length == 0) {
+        return 0;
+    }
     const y = points.map(p => p[1]);
     const min = Math.min(...y);
     const max = Math.max(...y);

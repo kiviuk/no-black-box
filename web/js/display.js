@@ -75,13 +75,17 @@ function toggleInput() {
 }
 
 function toggleOutput() {
-    if (confusionContainer.style.display === 'none') {
-        confusionContainer.style.display = 'block';
+    if (networkCanvas.style.display == "") {
+        networkCanvas.style.display = "none";
+        confusionContainer.style.display = "";
+    } else if (confusionContainer.style.display == "") {
+        confusionContainer.style.display = "none";
     } else {
-        confusionContainer.style.display = 'none';
+        confusionContainer.style.display = "";
+        networkCanvas.style.display = "";
     }
 }
 
-function toggleSamples() {
-    chart.toggleSamples();
-}
+// function toggleSamples() {
+//     chart.toggleSamples();
+// }
