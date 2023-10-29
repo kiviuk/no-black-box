@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const constants = require('../common/constants.js');
 const featureFunctions = require('../common/featureFunctions.js');
 const utils = require('../common/utils');
@@ -11,21 +13,19 @@ console.log("EXTRACTING FEATURES!")
 const samples = JSON.parse(fs.readFileSync(constants.SAMPLES));
 
 // iterate over all student submissions
-for (const sample of samples) {
+for (let i = 0; i < samples.length; i++) {
+    const sample = samples[i];
     const paths = JSON.parse(
-        fs.readFileSync(
-            constants.JSON_DIR + '/' + sample.id + '.json'
-        )
+        fs.readFileSync(constants.JSON_DIR + "/" + sample.id + ".json")
     );
-
-    const functions = featureFunctions.inUse.map(f => f.function);
-    sample.point = functions.map(f => f(paths));
+    const functions = featureFunctions.inUse.map((f) => f.function);
+    sample.point = functions.map((f) => f(paths));
+    utils.printProgress(i, samples.length - 1);
 }
-
 
 const featureNames = featureFunctions.inUse.map(f => f.name);
 
-console.log("GENERATING SPLITS...");
+console.log("\nGENERATING SPLITS...");
 
 const trainingAmount = samples.length * 0.5;
 

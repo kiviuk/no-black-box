@@ -3,7 +3,7 @@ const constants = {}
 constants.DATA_DIR = "../data";
 constants.DATASET_DIR = constants.DATA_DIR + "/dataset"
 constants.RAW_DIR = constants.DATA_DIR + "/raw";
-
+constants.MODELS_DIR = constants.DATA_DIR + "/models";
 constants.JSON_DIR = constants.DATASET_DIR + "/json";
 constants.IMG_DIR = constants.DATASET_DIR + "/img";
 constants.SAMPLES = constants.DATASET_DIR + "/samples.json";
