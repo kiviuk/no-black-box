@@ -2,5 +2,6 @@
 node/node_modules
 node/package.json
 node/package-lock.json
-data/dataset/img/
+data/dataset/
+common/js_objects/
 **.DS_Store
